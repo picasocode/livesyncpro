@@ -12,8 +12,9 @@ export default function RootLayout() {
         <Stack.Screen name="live" options={{ animation: 'slide_from_bottom' }} />
         <Stack.Screen name="transcript/[id]" />
         <Stack.Screen name="plugin/[id]" options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="call/new" options={{ animation: 'slide_from_bottom' }} />
         <Stack.Screen name="team" />
-        <Stack.Screen name="pricing" />
+        <Stack.Screen name="pricing" options={{ animation: 'slide_from_bottom' }} />
       </Stack>
     </SafeAreaProvider>
   );

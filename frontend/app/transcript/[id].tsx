@@ -10,7 +10,10 @@ export default function TranscriptDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const meeting = MEETINGS.find((m) => m.id === id) || MEETINGS[0];
-  const plugin = PLUGINS.find((p) => p.id === meeting.platform)!;
+  const plugin = meeting.platform ? PLUGINS.find((p) => p.id === meeting.platform) : null;
+  const typeLabel = meeting.type === 'call' ? 'Call' : meeting.type === 'talk' ? 'Live Talk' : 'Meeting';
+  const typeColor = meeting.type === 'call' ? '#0055FF' : meeting.type === 'talk' ? '#FF3366' : '#10B981';
+  const badge = plugin ? { color: plugin.color, name: plugin.name } : { color: typeColor, name: typeLabel };
   const from = getLang(meeting.from);
   const to = getLang(meeting.to);
   const [mode, setMode] = useState<'both' | 'translated'>('both');
@@ -31,9 +34,9 @@ export default function TranscriptDetail() {
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
         {/* Summary card */}
         <View style={styles.summary}>
-          <View style={[styles.platformBadge, { backgroundColor: plugin.color + '18' }]}>
-            <View style={[styles.platformDot, { backgroundColor: plugin.color }]} />
-            <Text style={[styles.platformText, { color: plugin.color }]}>{plugin.name}</Text>
+          <View style={[styles.platformBadge, { backgroundColor: badge.color + '18' }]}>
+            <View style={[styles.platformDot, { backgroundColor: badge.color }]} />
+            <Text style={[styles.platformText, { color: badge.color }]}>{badge.name}</Text>
           </View>
           <Text style={styles.title}>{meeting.title}</Text>
           <Text style={styles.dateLine}>{meeting.date} · {meeting.duration}</Text>

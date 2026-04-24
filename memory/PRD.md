@@ -1,43 +1,34 @@
-# LinguaLive — Pitch UI
+# LinguaLive — Translated Calls, Meetings & Talks
 
-Live voice-translation app for meetings, live streams, huddles — plus plugin previews for Google Meet, Zoom, Microsoft Teams, Slack.
+Pitch UI repositioned as a full **communications product** (calls + meetings + live talks), with plugin integrations demoted to a promotional "Discover" section.
 
-## Scope
-- **UI-only pitch** (no real translation backend). All data is mocked in `/app/frontend/src/mock.ts`.
-- Expo React Native with expo-router file-based routing.
+## Positioning
+**"Talk to anyone, in any language."** — real-time translated 1-on-1 calls, group meetings, and live broadcasts. Plus bonus plugins for Meet / Zoom / Teams / Slack.
 
-## Screens delivered
-| Route | Purpose |
-|---|---|
-| `/` | Onboarding / hero pitch |
-| `/(tabs)/home` | Dashboard: start live, plugin shortcuts, recent meetings |
-| `/(tabs)/history` | Transcripts list with search + filter chips |
-| `/(tabs)/plugins` | 4 plugin cards + features |
-| `/(tabs)/settings` | Profile, languages, voice, team, billing |
-| `/live` | Live translation: speaker pill, bilingual caption, animated waveform, language pills, mic/end controls |
-| `/transcript/[id]` | Audio player + bilingual/translated-only toggle transcript |
-| `/plugin/[id]` | Simulated plugin overlay inside a phone frame (Meet/Zoom/Teams/Slack specific) |
-| `/team` | Workspace card, seat usage, member list, invite link |
-| `/pricing` | Free / Pro / Business plans with monthly-yearly toggle |
+## Tab structure
+1. **Calls** (home) — 3-color mode grid (Call · Meeting · Talk), favorite contacts carousel, mixed recent activity
+2. **History** — type filter chips (All / Calls / Meetings / Talks), missed-call badges, incoming/outgoing indicators
+3. **Discover** — promotional plugin ads + customer stories + voice cloning feature ad + coming-soon integrations
+4. **Settings** — language prefs, voice cloning, team, billing
 
-## Design system
-- Theme: Swiss high-contrast light (pure whites, ink blacks)
-- Brand: Electric Cobalt `#0055FF`
-- Tokens in `/app/frontend/src/theme.ts`
-- Icons: `@expo/vector-icons` (Ionicons, MaterialCommunityIcons)
-- Animation: `react-native-reanimated` for live waveform
-- Gradient: `expo-linear-gradient` for onboarding hero overlay
+## New screens
+- `/call/new` — contact dialer with "You speak" language selector, voice/video call per contact
+- `/live?mode=call` — 1:1 call stage (caller avatar + pulse ring, video toggle)
+- `/live?mode=meeting` — group meeting (video-grid participants)
+- `/live?mode=talk` — live broadcast (host + pulse ring + 248 listeners badge + heart button)
 
-## Languages showcased
-English, Spanish, French, German, Japanese, Mandarin, Hindi, Arabic, Portuguese.
-
-## Not implemented (intentional)
-- Real ASR / MT / TTS pipeline
-- Auth, backend persistence, billing checkout
-- Push notifications, offline storage
+## Polish & animations
+- `PressableScale` reusable component: spring scale-on-press + haptic feedback (light/medium/heavy)
+- Entrance animations: `FadeInDown` / `FadeInUp` / `FadeInRight` / `SlideInDown` staggered across all screens
+- Live screen: animated confidence bar, fade crossover between captions, `PulseRing` on call/talk stages
+- Tab icons: spring scale bounce + active dot indicator on focus
+- Onboarding hero fade-in, glass card slides up with springify
+- Smoother stack transitions (slide-from-bottom for modals)
 
 ## Files
-- `/app/frontend/app/**` — screens
-- `/app/frontend/src/mock.ts` — mock meetings, team, transcripts
-- `/app/frontend/src/theme.ts` — design tokens
-- `/app/design_guidelines.json` — full design spec
+- New: `/app/frontend/src/components/PressableScale.tsx`, `/app/frontend/app/call/new.tsx`
+- Rewritten: `index.tsx`, `(tabs)/_layout.tsx`, `(tabs)/home.tsx` (Calls), `(tabs)/plugins.tsx` (Discover), `(tabs)/history.tsx`, `live.tsx`, `src/mock.ts`
+- Touched: `_layout.tsx`, `transcript/[id].tsx` (null-platform safety)
+
+## Still UI-only
+No ASR / MT / TTS / auth / payments wired. All data mocked.

@@ -1,148 +1,243 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { theme, shadows } from '../../src/theme';
-import { PLUGINS, MEETINGS, AVATARS, getLang } from '../../src/mock';
+import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import PressableScale from '../../src/components/PressableScale';
+import { theme } from '../../src/theme';
+import { CALL_MODES, CONTACTS, ACTIVITY, AVATARS, getLang, getContact } from '../../src/mock';
 
-export default function Home() {
+const STATUS_COLORS: Record<string, string> = {
+  online: '#10B981',
+  away: '#F59E0B',
+  offline: '#A1A1AA',
+};
+
+const TYPE_META: Record<string, { icon: any; color: string; label: string }> = {
+  call: { icon: 'call', color: '#0055FF', label: 'Call' },
+  meeting: { icon: 'people', color: '#10B981', label: 'Meeting' },
+  talk: { icon: 'radio', color: '#FF3366', label: 'Talk' },
+};
+
+export default function Calls() {
   const router = useRouter();
 
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={styles.header}>
+        <Animated.View entering={FadeInDown.duration(500)} style={styles.header}>
           <View>
             <Text style={styles.greet}>Good morning,</Text>
             <Text style={styles.name}>Alex ✳︎</Text>
           </View>
-          <TouchableOpacity style={styles.profileBtn} testID="home-profile-btn">
+          <PressableScale style={styles.profileBtn} testID="calls-profile-btn">
             <Image source={{ uri: AVATARS[5] }} style={styles.profileImg} />
-          </TouchableOpacity>
-        </View>
+            <View style={[styles.presenceDot, { backgroundColor: STATUS_COLORS.online }]} />
+          </PressableScale>
+        </Animated.View>
 
-        {/* Hero start card */}
-        <View style={styles.heroCard}>
+        {/* Hero CTA - call modes */}
+        <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.heroCard}>
           <View style={styles.heroRow}>
             <View style={styles.liveBadge}>
-              <View style={styles.liveDot} />
-              <Text style={styles.liveBadgeText}>READY</Text>
+              <View style={styles.livePulse} />
+              <Text style={styles.liveBadgeText}>READY · 42ms</Text>
             </View>
-            <Text style={styles.heroLatency}>42ms latency</Text>
+            <View style={styles.langIndicator}>
+              <Text style={styles.langIndicatorFlag}>🇺🇸</Text>
+              <Ionicons name="swap-horizontal" size={12} color="rgba(255,255,255,0.6)" />
+              <Text style={styles.langIndicatorFlag}>🇪🇸</Text>
+            </View>
           </View>
-          <Text style={styles.heroTitle}>Start a live{'\n'}translated meeting</Text>
-          <Text style={styles.heroSub}>9 languages · realtime captions · on-device privacy</Text>
+          <Text style={styles.heroTitle}>Talk in any{'\n'}language.</Text>
+          <Text style={styles.heroSub}>Start a translated conversation in one tap</Text>
 
-          <TouchableOpacity
-            style={styles.ctaPrimary}
-            activeOpacity={0.85}
-            onPress={() => router.push('/live')}
-            testID="home-start-live-btn"
-          >
-            <Ionicons name="radio" size={18} color="#fff" />
-            <Text style={styles.ctaPrimaryText}>Start Live Translation</Text>
-          </TouchableOpacity>
+          <View style={styles.modeGrid}>
+            {CALL_MODES.map((m, i) => (
+              <Animated.View
+                key={m.id}
+                entering={FadeInRight.delay(200 + i * 80).duration(450)}
+                style={{ flex: 1 }}
+              >
+                <PressableScale
+                  style={[styles.modeBtn, { backgroundColor: m.color }]}
+                  onPress={() => router.push(`/live?mode=${m.id}` as any)}
+                  haptic="medium"
+                  testID={`calls-mode-${m.id}-btn`}
+                >
+                  <Ionicons name={m.icon as any} size={22} color="#fff" />
+                  <Text style={styles.modeName}>{m.name}</Text>
+                  <Text style={styles.modeDesc} numberOfLines={2}>{m.desc}</Text>
+                  <View style={styles.modeTag}>
+                    <Text style={styles.modeTagText}>{m.tag}</Text>
+                  </View>
+                </PressableScale>
+              </Animated.View>
+            ))}
+          </View>
 
           <View style={styles.quickRow}>
-            <TouchableOpacity style={styles.quickBtn} testID="home-join-btn">
-              <Ionicons name="enter-outline" size={18} color={theme.colors.ink} />
-              <Text style={styles.quickText}>Join</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickBtn} testID="home-schedule-btn">
-              <Ionicons name="calendar-outline" size={18} color={theme.colors.ink} />
+            <PressableScale
+              style={styles.quickBtn}
+              onPress={() => router.push('/call/new')}
+              testID="calls-new-call-btn"
+            >
+              <Ionicons name="keypad-outline" size={18} color="#fff" />
+              <Text style={styles.quickText}>Dial</Text>
+            </PressableScale>
+            <PressableScale style={styles.quickBtn} testID="calls-join-btn">
+              <Ionicons name="enter-outline" size={18} color="#fff" />
+              <Text style={styles.quickText}>Join link</Text>
+            </PressableScale>
+            <PressableScale style={styles.quickBtn} testID="calls-schedule-btn">
+              <Ionicons name="calendar-outline" size={18} color="#fff" />
               <Text style={styles.quickText}>Schedule</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickBtn} testID="home-invite-btn">
-              <Ionicons name="person-add-outline" size={18} color={theme.colors.ink} />
-              <Text style={styles.quickText}>Invite</Text>
-            </TouchableOpacity>
+            </PressableScale>
           </View>
-        </View>
+        </Animated.View>
 
-        {/* Plugins */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Install plugins</Text>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/plugins')} testID="home-all-plugins-btn">
-            <Text style={styles.seeAll}>See all</Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}>
-          {PLUGINS.map((p) => (
-            <TouchableOpacity
-              key={p.id}
-              style={[styles.pluginCard, { backgroundColor: p.color }]}
-              activeOpacity={0.9}
-              onPress={() => router.push(`/plugin/${p.id}` as any)}
-              testID={`home-plugin-${p.id}-btn`}
+        {/* Favorite contacts */}
+        <Animated.View entering={FadeInDown.delay(250).duration(500)}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Favorites</Text>
+            <PressableScale testID="calls-favorites-all-btn" pressScale={0.97}>
+              <Text style={styles.seeAll}>All contacts</Text>
+            </PressableScale>
+          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 20, gap: 14 }}
+          >
+            <PressableScale
+              style={styles.addContact}
+              onPress={() => router.push('/call/new')}
+              testID="calls-contact-add"
             >
-              <View style={styles.pluginIconBg}>
-                <Ionicons name={p.icon as any} size={22} color="#fff" />
+              <View style={styles.addCircle}>
+                <Ionicons name="add" size={24} color={theme.colors.brand} />
               </View>
-              <Text style={styles.pluginCardTag}>{p.tag}</Text>
-              <Text style={styles.pluginCardName}>{p.name}</Text>
-              <View style={styles.pluginCardFoot}>
-                <Text style={styles.pluginCardUsers}>{p.users} installs</Text>
-                <Ionicons name="arrow-forward" size={16} color="#fff" />
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+              <Text style={styles.contactName}>Add</Text>
+            </PressableScale>
+            {CONTACTS.map((c, i) => {
+              const lang = getLang(c.lang);
+              return (
+                <Animated.View key={c.id} entering={FadeInRight.delay(300 + i * 60).duration(400)}>
+                  <PressableScale
+                    style={styles.contactItem}
+                    onPress={() => router.push(`/live?mode=call&contact=${c.id}` as any)}
+                    haptic="medium"
+                    testID={`calls-contact-${c.id}`}
+                  >
+                    <View style={styles.contactAvatarWrap}>
+                      <Image source={{ uri: c.avatar }} style={styles.contactAvatar} />
+                      <View style={[styles.contactPresence, { backgroundColor: STATUS_COLORS[c.status] }]} />
+                      <View style={styles.contactFlag}>
+                        <Text style={{ fontSize: 10 }}>{lang.flag}</Text>
+                      </View>
+                    </View>
+                    <Text style={styles.contactName} numberOfLines={1}>{c.name.split(' ')[0]}</Text>
+                    <Text style={styles.contactSub} numberOfLines={1}>{c.location}</Text>
+                  </PressableScale>
+                </Animated.View>
+              );
+            })}
+          </ScrollView>
+        </Animated.View>
 
-        {/* Recent */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent meetings</Text>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/history')} testID="home-all-history-btn">
-            <Text style={styles.seeAll}>See all</Text>
-          </TouchableOpacity>
-        </View>
-
-        {MEETINGS.slice(0, 3).map((m) => {
-          const from = getLang(m.from);
-          const to = getLang(m.to);
-          return (
-            <TouchableOpacity
-              key={m.id}
-              style={styles.meetingCard}
-              onPress={() => router.push(`/transcript/${m.id}` as any)}
-              testID={`home-meeting-${m.id}-btn`}
-              activeOpacity={0.85}
+        {/* Recent activity */}
+        <Animated.View entering={FadeInDown.delay(320).duration(500)}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Recent</Text>
+            <PressableScale
+              onPress={() => router.push('/(tabs)/history')}
+              testID="calls-history-all-btn"
+              pressScale={0.97}
             >
-              <View style={styles.meetingTop}>
-                <View style={styles.langPill}>
-                  <Text style={styles.langFlag}>{from.flag}</Text>
-                  <Ionicons name="arrow-forward" size={12} color={theme.colors.textSecondary} />
-                  <Text style={styles.langFlag}>{to.flag}</Text>
-                </View>
-                <Text style={styles.meetingDate}>{m.date}</Text>
-              </View>
-              <Text style={styles.meetingTitle} numberOfLines={1}>{m.title}</Text>
-              <Text style={styles.meetingPreview} numberOfLines={1}>"{m.translatedPreview}"</Text>
-              <View style={styles.meetingFoot}>
-                <View style={styles.metaRow}>
-                  <Ionicons name="people-outline" size={13} color={theme.colors.textTertiary} />
-                  <Text style={styles.metaText}>{m.participants}</Text>
-                </View>
-                <View style={styles.metaRow}>
-                  <Ionicons name="time-outline" size={13} color={theme.colors.textTertiary} />
-                  <Text style={styles.metaText}>{m.duration}</Text>
-                </View>
-                <View style={[styles.platformDot, { backgroundColor: PLUGINS.find((p) => p.id === m.platform)?.color }]} />
-                <Text style={styles.metaText}>{PLUGINS.find((p) => p.id === m.platform)?.name}</Text>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
+              <Text style={styles.seeAll}>See all</Text>
+            </PressableScale>
+          </View>
 
-        <TouchableOpacity style={styles.upgradeBanner} onPress={() => router.push('/pricing')} testID="home-upgrade-banner">
-          <View style={{ flex: 1 }}>
-            <Text style={styles.upgradeTitle}>Unlock Pro · unlimited minutes</Text>
-            <Text style={styles.upgradeSub}>Clone your voice in 9 languages</Text>
-          </View>
-          <View style={styles.upgradeArrow}>
-            <Ionicons name="arrow-forward" size={18} color="#fff" />
-          </View>
-        </TouchableOpacity>
+          {ACTIVITY.slice(0, 4).map((a, i) => {
+            const meta = TYPE_META[a.type];
+            const from = getLang(a.from);
+            const to = getLang(a.to);
+            const contact = getContact(a.contactId);
+            return (
+              <Animated.View key={a.id} entering={FadeInDown.delay(400 + i * 70).duration(400)}>
+                <PressableScale
+                  style={styles.activityRow}
+                  onPress={() => router.push(a.type === 'call' ? `/live?mode=call&contact=${a.contactId || ''}` as any : `/transcript/${a.id}` as any)}
+                  testID={`calls-activity-${a.id}`}
+                  pressScale={0.98}
+                >
+                  <View style={styles.actIconWrap}>
+                    {contact ? (
+                      <Image source={{ uri: contact.avatar }} style={styles.actAvatar} />
+                    ) : (
+                      <View style={[styles.actIconBg, { backgroundColor: meta.color + '18' }]}>
+                        <Ionicons name={meta.icon} size={18} color={meta.color} />
+                      </View>
+                    )}
+                    <View style={[styles.actTypeDot, { backgroundColor: meta.color }]}>
+                      <Ionicons name={meta.icon} size={9} color="#fff" />
+                    </View>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.actTitle, a.missed && { color: theme.colors.error }]} numberOfLines={1}>
+                      {a.direction === 'incoming' && !a.missed && '↓ '}
+                      {a.direction === 'outgoing' && !a.missed && '↑ '}
+                      {a.missed && '⚠︎ '}
+                      {a.title}
+                    </Text>
+                    <View style={styles.actMeta}>
+                      <Text style={styles.actSub}>{meta.label}</Text>
+                      <View style={styles.actDot} />
+                      <Text style={styles.actFlag}>{from.flag}</Text>
+                      <Ionicons name="arrow-forward" size={10} color={theme.colors.textTertiary} />
+                      <Text style={styles.actFlag}>{to.flag}</Text>
+                      <View style={styles.actDot} />
+                      <Text style={styles.actSub} numberOfLines={1}>{a.date.split('·')[0].trim()}</Text>
+                    </View>
+                  </View>
+                  {a.type === 'call' ? (
+                    <PressableScale
+                      style={[styles.callBack, { backgroundColor: meta.color }]}
+                      onPress={() => router.push(`/live?mode=call&contact=${a.contactId || ''}` as any)}
+                      haptic="medium"
+                      testID={`calls-callback-${a.id}`}
+                    >
+                      <Ionicons name="call" size={14} color="#fff" />
+                    </PressableScale>
+                  ) : (
+                    <View style={styles.durationPill}>
+                      <Text style={styles.durationText}>{a.duration}</Text>
+                    </View>
+                  )}
+                </PressableScale>
+              </Animated.View>
+            );
+          })}
+        </Animated.View>
+
+        <Animated.View entering={FadeInDown.delay(650).duration(500)}>
+          <PressableScale
+            style={styles.upgradeBanner}
+            onPress={() => router.push('/pricing')}
+            testID="calls-upgrade-banner"
+            pressScale={0.98}
+          >
+            <View style={styles.upgradeIcon}>
+              <Ionicons name="sparkles" size={18} color={theme.colors.brand} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.upgradeTitle}>Unlock Pro · unlimited calls</Text>
+              <Text style={styles.upgradeSub}>Clone your voice in 9 languages</Text>
+            </View>
+            <Ionicons name="arrow-forward" size={18} color={theme.colors.brand} />
+          </PressableScale>
+        </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -154,48 +249,61 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 8, paddingBottom: 20 },
   greet: { fontSize: 14, color: theme.colors.textSecondary, fontWeight: '500' },
   name: { fontSize: 26, fontWeight: '800', color: theme.colors.ink, letterSpacing: -0.8, marginTop: 2 },
-  profileBtn: { width: 44, height: 44, borderRadius: 22, overflow: 'hidden', borderWidth: 2, borderColor: '#fff', ...shadows.soft },
-  profileImg: { width: '100%', height: '100%' },
+  profileBtn: { width: 44, height: 44, borderRadius: 22, position: 'relative' },
+  profileImg: { width: '100%', height: '100%', borderRadius: 22 },
+  presenceDot: { position: 'absolute', bottom: 0, right: 0, width: 12, height: 12, borderRadius: 6, borderWidth: 2, borderColor: theme.colors.bg },
 
-  heroCard: { marginHorizontal: 20, backgroundColor: theme.colors.ink, borderRadius: 24, padding: 24, marginBottom: 28 },
-  heroRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
-  liveBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.1)', paddingVertical: 5, paddingHorizontal: 10, borderRadius: 999 },
-  liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: theme.colors.success },
-  liveBadgeText: { color: '#fff', fontSize: 10, fontWeight: '700', letterSpacing: 1 },
-  heroLatency: { color: theme.colors.textTertiary, fontSize: 11, fontWeight: '600' },
-  heroTitle: { color: '#fff', fontSize: 30, fontWeight: '800', letterSpacing: -1, lineHeight: 36, marginBottom: 8 },
-  heroSub: { color: '#A1A1AA', fontSize: 13, marginBottom: 20 },
-  ctaPrimary: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: theme.colors.brand, paddingVertical: 14, borderRadius: 12, marginBottom: 12 },
-  ctaPrimaryText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  heroCard: { marginHorizontal: 20, backgroundColor: theme.colors.ink, borderRadius: 24, padding: 22, marginBottom: 28 },
+  heroRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  liveBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(16,185,129,0.15)', paddingVertical: 5, paddingHorizontal: 10, borderRadius: 999 },
+  livePulse: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981' },
+  liveBadgeText: { color: '#10B981', fontSize: 10, fontWeight: '800', letterSpacing: 0.8 },
+  langIndicator: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.08)', paddingVertical: 5, paddingHorizontal: 10, borderRadius: 999 },
+  langIndicatorFlag: { fontSize: 13 },
+  heroTitle: { color: '#fff', fontSize: 32, fontWeight: '800', letterSpacing: -1.2, lineHeight: 38, marginBottom: 6 },
+  heroSub: { color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 18 },
+
+  modeGrid: { flexDirection: 'row', gap: 8, marginBottom: 12 },
+  modeBtn: { padding: 14, borderRadius: 14, minHeight: 128, justifyContent: 'space-between' },
+  modeName: { color: '#fff', fontSize: 13, fontWeight: '800', marginTop: 8, letterSpacing: -0.2 },
+  modeDesc: { color: 'rgba(255,255,255,0.82)', fontSize: 10, fontWeight: '500', lineHeight: 14, marginTop: 2 },
+  modeTag: { alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.2)', paddingVertical: 3, paddingHorizontal: 7, borderRadius: 999, marginTop: 6 },
+  modeTagText: { color: '#fff', fontSize: 9, fontWeight: '800', letterSpacing: 0.5 },
+
   quickRow: { flexDirection: 'row', gap: 8 },
-  quickBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.08)', paddingVertical: 12, borderRadius: 10 },
-  quickText: { color: '#fff', fontSize: 13, fontWeight: '600' },
+  quickBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.08)', paddingVertical: 11, borderRadius: 10 },
+  quickText: { color: '#fff', fontSize: 12, fontWeight: '700' },
 
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 12, marginTop: 8 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 12, marginTop: 4 },
   sectionTitle: { fontSize: 18, fontWeight: '800', color: theme.colors.ink, letterSpacing: -0.4 },
-  seeAll: { fontSize: 13, fontWeight: '600', color: theme.colors.brand },
+  seeAll: { fontSize: 13, fontWeight: '700', color: theme.colors.brand },
 
-  pluginCard: { width: 180, height: 170, borderRadius: 18, padding: 16, justifyContent: 'space-between', marginBottom: 24 },
-  pluginIconBg: { width: 40, height: 40, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },
-  pluginCardTag: { color: 'rgba(255,255,255,0.85)', fontSize: 10, fontWeight: '700', letterSpacing: 1 },
-  pluginCardName: { color: '#fff', fontSize: 18, fontWeight: '800', letterSpacing: -0.3 },
-  pluginCardFoot: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  pluginCardUsers: { color: 'rgba(255,255,255,0.8)', fontSize: 11, fontWeight: '600' },
+  addContact: { alignItems: 'center', width: 64, gap: 4, paddingBottom: 24 },
+  addCircle: { width: 56, height: 56, borderRadius: 28, backgroundColor: theme.colors.brandSoft, borderWidth: 2, borderColor: theme.colors.brand, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
+  contactItem: { alignItems: 'center', width: 70, gap: 4, paddingBottom: 24 },
+  contactAvatarWrap: { position: 'relative', marginBottom: 4 },
+  contactAvatar: { width: 56, height: 56, borderRadius: 28 },
+  contactPresence: { position: 'absolute', bottom: 1, right: 1, width: 12, height: 12, borderRadius: 6, borderWidth: 2, borderColor: theme.colors.bg },
+  contactFlag: { position: 'absolute', top: -3, right: -3, width: 20, height: 20, borderRadius: 10, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: theme.colors.bg },
+  contactName: { fontSize: 12, fontWeight: '700', color: theme.colors.ink },
+  contactSub: { fontSize: 10, color: theme.colors.textTertiary, fontWeight: '500' },
 
-  meetingCard: { marginHorizontal: 20, marginBottom: 12, backgroundColor: '#fff', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: theme.colors.border },
-  meetingTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  langPill: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: theme.colors.bg, paddingVertical: 4, paddingHorizontal: 10, borderRadius: 999 },
-  langFlag: { fontSize: 14 },
-  meetingDate: { fontSize: 11, color: theme.colors.textTertiary, fontWeight: '600' },
-  meetingTitle: { fontSize: 15, fontWeight: '700', color: theme.colors.ink, marginBottom: 4 },
-  meetingPreview: { fontSize: 13, color: theme.colors.textSecondary, fontStyle: 'italic', marginBottom: 10 },
-  meetingFoot: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  metaText: { fontSize: 11, color: theme.colors.textSecondary, fontWeight: '500' },
-  platformDot: { width: 6, height: 6, borderRadius: 3, marginLeft: 4 },
+  activityRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginHorizontal: 20, marginBottom: 10, padding: 12, backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: theme.colors.border },
+  actIconWrap: { position: 'relative' },
+  actAvatar: { width: 44, height: 44, borderRadius: 22 },
+  actIconBg: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  actTypeDot: { position: 'absolute', bottom: -2, right: -2, width: 18, height: 18, borderRadius: 9, borderWidth: 2, borderColor: '#fff', alignItems: 'center', justifyContent: 'center' },
+  actTitle: { fontSize: 14, fontWeight: '700', color: theme.colors.ink, marginBottom: 3 },
+  actMeta: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  actSub: { fontSize: 11, color: theme.colors.textSecondary, fontWeight: '500' },
+  actFlag: { fontSize: 12 },
+  actDot: { width: 2, height: 2, borderRadius: 1, backgroundColor: theme.colors.textTertiary },
+  callBack: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  durationPill: { backgroundColor: theme.colors.bg, paddingVertical: 4, paddingHorizontal: 8, borderRadius: 6 },
+  durationText: { fontSize: 11, fontWeight: '700', color: theme.colors.textSecondary },
 
-  upgradeBanner: { marginHorizontal: 20, marginTop: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.brand, borderRadius: 16, padding: 18 },
-  upgradeTitle: { color: '#fff', fontSize: 15, fontWeight: '800', marginBottom: 2 },
-  upgradeSub: { color: 'rgba(255,255,255,0.85)', fontSize: 12 },
-  upgradeArrow: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center' },
+  upgradeBanner: { marginHorizontal: 20, marginTop: 16, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 16, padding: 14, borderWidth: 1, borderColor: theme.colors.border },
+  upgradeIcon: { width: 40, height: 40, borderRadius: 10, backgroundColor: theme.colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
+  upgradeTitle: { color: theme.colors.ink, fontSize: 14, fontWeight: '800', marginBottom: 2 },
+  upgradeSub: { color: theme.colors.textSecondary, fontSize: 11 },
 });
