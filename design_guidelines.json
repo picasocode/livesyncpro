@@ -1,0 +1,260 @@
+{
+  "theme": "light",
+  "archetype": "4 (Swiss & High-Contrast)",
+  "design_philosophy": "Pitch-worthy, highly legible, professional, and trustworthy. Strict black text on pure white surfaces with strong structural borders. Avoids 'AI-slop' gradients completely; instead uses bold typography, high-contrast layouts, and Electric Cobalt as the primary action color. Feels like a premium enterprise productivity tool.",
+  "colors": {
+    "background": {
+      "default": "#F9FAFB",
+      "surface": "#FFFFFF",
+      "surface_elevated": "#FFFFFF",
+      "inverse": "#09090B"
+    },
+    "text": {
+      "primary": "#09090B",
+      "secondary": "#52525B",
+      "tertiary": "#A1A1AA",
+      "inverse": "#FFFFFF",
+      "brand": "#0055FF"
+    },
+    "brand": {
+      "primary": "#0055FF",
+      "primary_active": "#0044CC",
+      "secondary": "#E6EFFF"
+    },
+    "semantic": {
+      "success": "#10B981",
+      "warning": "#F59E0B",
+      "error": "#EF4444",
+      "live_recording": "#FF3366",
+      "border": "#E4E4E7",
+      "border_focus": "#09090B"
+    },
+    "plugin_brands": {
+      "google_meet": "#00796B",
+      "zoom": "#2D8CFF",
+      "teams": "#5B5FC7",
+      "slack": "#4A154B"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "heading": "Manrope",
+      "body": "Inter",
+      "mono": "Space Mono",
+      "instructions": "Use @expo-google-fonts/manrope and @expo-google-fonts/inter. If not feasible during pitch dev, fallback to system fonts (San Francisco/Roboto) with strict weights."
+    },
+    "scale": {
+      "h1": { "fontSize": 40, "lineHeight": 48, "fontWeight": "800", "letterSpacing": -1.5 },
+      "h2": { "fontSize": 32, "lineHeight": 40, "fontWeight": "800", "letterSpacing": -1 },
+      "h3": { "fontSize": 24, "lineHeight": 32, "fontWeight": "700", "letterSpacing": -0.5 },
+      "h4": { "fontSize": 20, "lineHeight": 28, "fontWeight": "600", "letterSpacing": -0.3 },
+      "body_lg": { "fontSize": 18, "lineHeight": 26, "fontWeight": "500" },
+      "body": { "fontSize": 16, "lineHeight": 24, "fontWeight": "400" },
+      "body_sm": { "fontSize": 14, "lineHeight": 20, "fontWeight": "500" },
+      "caption": { "fontSize": 12, "lineHeight": 16, "fontWeight": "600", "textTransform": "uppercase", "letterSpacing": 1.2 }
+    }
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "2xl": 48,
+    "3xl": 64,
+    "safe_area_padding": 24
+  },
+  "components": {
+    "buttons": {
+      "primary": {
+        "backgroundColor": "#0055FF",
+        "borderRadius": 12,
+        "paddingVertical": 16,
+        "paddingHorizontal": 24,
+        "alignItems": "center",
+        "justifyContent": "center"
+      },
+      "secondary": {
+        "backgroundColor": "#FFFFFF",
+        "borderWidth": 1,
+        "borderColor": "#E4E4E7",
+        "borderRadius": 12,
+        "paddingVertical": 16,
+        "paddingHorizontal": 24,
+        "alignItems": "center",
+        "justifyContent": "center"
+      },
+      "text_style": {
+        "color": "#FFFFFF",
+        "fontSize": 16,
+        "fontWeight": "700"
+      },
+      "icon_button": {
+        "width": 56,
+        "height": 56,
+        "borderRadius": 28,
+        "alignItems": "center",
+        "justifyContent": "center",
+        "backgroundColor": "#FFFFFF",
+        "shadowColor": "#000",
+        "shadowOffset": { "width": 0, "height": 4 },
+        "shadowOpacity": 0.08,
+        "shadowRadius": 12,
+        "elevation": 4
+      }
+    },
+    "cards": {
+      "default": {
+        "backgroundColor": "#FFFFFF",
+        "borderRadius": 16,
+        "padding": 20,
+        "borderWidth": 1,
+        "borderColor": "#E4E4E7",
+        "shadowColor": "#000",
+        "shadowOffset": { "width": 0, "height": 2 },
+        "shadowOpacity": 0.04,
+        "shadowRadius": 8,
+        "elevation": 2
+      },
+      "plugin_card": {
+        "borderRadius": 16,
+        "padding": 20,
+        "overflow": "hidden"
+      }
+    },
+    "pills": {
+      "language": {
+        "flexDirection": "row",
+        "alignItems": "center",
+        "backgroundColor": "#F4F4F5",
+        "paddingVertical": 8,
+        "paddingHorizontal": 12,
+        "borderRadius": 20,
+        "borderWidth": 1,
+        "borderColor": "#E4E4E7"
+      },
+      "speaker": {
+        "flexDirection": "row",
+        "alignItems": "center",
+        "backgroundColor": "#09090B",
+        "paddingVertical": 6,
+        "paddingHorizontal": 10,
+        "borderRadius": 16
+      }
+    },
+    "shadows": {
+      "soft": {
+        "shadowColor": "#000",
+        "shadowOffset": { "width": 0, "height": 4 },
+        "shadowOpacity": 0.06,
+        "shadowRadius": 16,
+        "elevation": 3
+      },
+      "float": {
+        "shadowColor": "#000",
+        "shadowOffset": { "width": 0, "height": 12 },
+        "shadowOpacity": 0.1,
+        "shadowRadius": 24,
+        "elevation": 8
+      }
+    }
+  },
+  "screens": {
+    "Onboarding": {
+      "layout": "Hero image top (40% height), bold copy in center, primary CTA at bottom. Minimalist, premium pitch.",
+      "key_elements": [
+        "Headline: 'Speak the world’s languages. Instantly.'",
+        "Subtitle: 'Real-time translation for meetings, streams, and global teams.'",
+        "Primary CTA: 'Get Started'"
+      ]
+    },
+    "HomeDashboard": {
+      "layout": "Header with user profile and greeting. Quick action row (Join, Host, Settings). Section for 'Active Plugins' and 'Recent Meetings'.",
+      "key_elements": [
+        "Large floating action button or prominent card for 'Start Live Translation'.",
+        "Horizontal scroll list of Plugin Previews (Google Meet, Zoom, etc.) indicating 'Install Plugin'.",
+        "Recent Transcripts list (Title, Date, Languages used)."
+      ]
+    },
+    "LiveTranslation": {
+      "layout": "Dark or high-contrast screen. Top nav with meeting info and connection status. Center stage for dynamic translated text. Bottom area for waveforms and controls.",
+      "key_elements": [
+        "Current Speaker Pill (e.g., '👤 Alex is speaking Spanish').",
+        "Original Text (smaller, gray, above).",
+        "Translated Text (large, bold, primary focus).",
+        "Animated Audio Waveform using react-native-reanimated. Color reacts to voice volume (Brand Color or Live Recording Pink).",
+        "Bottom Controls: Mute toggle, End Meeting (Red), Switch Target Language."
+      ]
+    },
+    "HistoryDetail": {
+      "layout": "Transcript view. Split or toggle layout.",
+      "key_elements": [
+        "Audio playback timeline at top.",
+        "List of chat bubbles or transcript blocks. Each block shows Original Language on top (small), Target Language below (large).",
+        "Export / Share buttons."
+      ]
+    },
+    "PluginPreviews": {
+      "layout": "Simulated overlays. A React Native screen that looks exactly like a Google Meet or Zoom mobile call, with the 'Translation Widget' floating on top.",
+      "key_elements": [
+        "Mock video grids (using Unsplash avatars).",
+        "Host platform UI framing (e.g., Teams purple header).",
+        "Floating Glassmorphism widget displaying real-time captions."
+      ]
+    },
+    "Settings": {
+      "layout": "Standard iOS/Android styled grouped list.",
+      "key_elements": [
+        "Default Languages (Source & Target).",
+        "Voice Cloning Settings (Accent selection).",
+        "Workspace / Team Members management.",
+        "Pro Subscription pitch (Pricing tables)."
+      ]
+    }
+  },
+  "interactions": {
+    "waveform": "Use react-native-reanimated for smooth, spring-based bar scaling to simulate voice detection. Not a static GIF.",
+    "buttons": "Implement scale-down on press (0.95) using TouchableOpacity or Pressable.",
+    "haptics": "Trigger light haptic feedback on language switch and meeting start/stop (use expo-haptics)."
+  },
+  "media": {
+    "hero_images": [
+      {
+        "url": "https://images.unsplash.com/photo-1758598307153-f1c53d9db23e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDR8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjB1c2luZyUyMHNtYXJ0cGhvbmUlMjBmb2N1c2VkfGVufDB8fHx8MTc3NzA0MTM5OXww&ixlib=rb-4.1.0&q=85",
+        "category": "onboarding_hero",
+        "description": "Professional using smartphone, representing the mobile app interface."
+      },
+      {
+        "url": "https://images.pexels.com/photos/9301900/pexels-photo-9301900.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "category": "pitch_background",
+        "description": "Sleek conference room."
+      }
+    ],
+    "avatars": [
+      {
+        "url": "https://images.unsplash.com/photo-1758600587815-b654d1405e83?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2OTV8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBkaXZlcnNlJTIwYXZhdGFyJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzc3MDQxMzk5fDA&ixlib=rb-4.1.0&q=85",
+        "category": "participant_1",
+        "description": "Woman with long dark hair."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1652477633088-da74a0225dfc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2OTV8MHwxfHNlYXJjaHw0fHxwcm9mZXNzaW9uYWwlMjBkaXZlcnNlJTIwYXZhdGFyJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzc3MDQxMzk5fDA&ixlib=rb-4.1.0&q=85",
+        "category": "participant_2",
+        "description": "Person wearing glasses."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1758600587853-3d2138df6b2b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2OTV8MHwxfHNlYXJjaHwyfHxwcm9mZXNzaW9uYWwlMjBkaXZlcnNlJTIwYXZhdGFyJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzc3MDQxMzk5fDA&ixlib=rb-4.1.0&q=85",
+        "category": "participant_3",
+        "description": "Young woman smiling."
+      }
+    ],
+    "icons": "Use @expo/vector-icons (Feather or Ionicons) exclusively for standard UI iconography."
+  },
+  "instructions_to_main_agent": [
+    "Build this as a standard Expo React Native project. DO NOT USE SHADCN OR TAILWIND unless utilizing NativeWind. Use pure React Native StyleSheet if standard React Native.",
+    "Use standard View, Text, TouchableOpacity, ScrollView, and FlatList components.",
+    "Ensure ALL interactive elements include testID prop (e.g., testID='start-translation-button').",
+    "For the Plugin Preview views, construct simulated views using hardcoded absolute positioned bars that mimic Meet/Teams colors, and place the translation widget overlay on top.",
+    "Do not use external web libraries. Rely on expo-blur for glassmorphism effects and expo-linear-gradient for smooth color transitions.",
+    "The Live Translation UI must look premium. Emphasize large typography for translated text and distinct UI hierarchy."
+  ]
+}
