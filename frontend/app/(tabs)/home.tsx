@@ -1,11 +1,11 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import PressableScale from '../../src/components/PressableScale';
 import { theme } from '../../src/theme';
-import { CALL_MODES, CONTACTS, ACTIVITY, AVATARS, getLang, getContact } from '../../src/mock';
+import { CONTACTS, ACTIVITY, AVATARS, getLang, getContact } from '../../src/mock';
 
 const STATUS_COLORS: Record<string, string> = {
   online: '#10B981',
@@ -25,80 +25,26 @@ export default function Calls() {
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        
         {/* Header */}
         <Animated.View entering={FadeInDown.duration(500)} style={styles.header}>
           <View>
             <Text style={styles.greet}>Good morning,</Text>
             <Text style={styles.name}>Alex ✳︎</Text>
           </View>
-          <PressableScale style={styles.profileBtn} testID="calls-profile-btn">
+          {/* PFP acts as settings button now */}
+          <PressableScale 
+            style={styles.profileBtn} 
+            testID="calls-profile-btn"
+            onPress={() => router.push('/settings' as any)}
+          >
             <Image source={{ uri: AVATARS[5] }} style={styles.profileImg} />
             <View style={[styles.presenceDot, { backgroundColor: STATUS_COLORS.online }]} />
           </PressableScale>
         </Animated.View>
 
-        {/* Hero CTA - call modes */}
-        <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.heroCard}>
-          <View style={styles.heroRow}>
-            <View style={styles.liveBadge}>
-              <View style={styles.livePulse} />
-              <Text style={styles.liveBadgeText}>READY · 42ms</Text>
-            </View>
-            <View style={styles.langIndicator}>
-              <Text style={styles.langIndicatorFlag}>🇺🇸</Text>
-              <Ionicons name="swap-horizontal" size={12} color="rgba(255,255,255,0.6)" />
-              <Text style={styles.langIndicatorFlag}>🇪🇸</Text>
-            </View>
-          </View>
-          <Text style={styles.heroTitle}>Talk in any{'\n'}language.</Text>
-          <Text style={styles.heroSub}>Start a translated conversation in one tap</Text>
-
-          <View style={styles.modeGrid}>
-            {CALL_MODES.map((m, i) => (
-              <Animated.View
-                key={m.id}
-                entering={FadeInRight.delay(200 + i * 80).duration(450)}
-                style={{ flex: 1 }}
-              >
-                <PressableScale
-                  style={[styles.modeBtn, { backgroundColor: m.color }]}
-                  onPress={() => router.push(`/live?mode=${m.id}` as any)}
-                  haptic="medium"
-                  testID={`calls-mode-${m.id}-btn`}
-                >
-                  <Ionicons name={m.icon as any} size={22} color="#fff" />
-                  <Text style={styles.modeName}>{m.name}</Text>
-                  <Text style={styles.modeDesc} numberOfLines={2}>{m.desc}</Text>
-                  <View style={styles.modeTag}>
-                    <Text style={styles.modeTagText}>{m.tag}</Text>
-                  </View>
-                </PressableScale>
-              </Animated.View>
-            ))}
-          </View>
-
-          <View style={styles.quickRow}>
-            <PressableScale
-              style={styles.quickBtn}
-              onPress={() => router.push('/call/new')}
-              testID="calls-new-call-btn"
-            >
-              <Ionicons name="keypad-outline" size={18} color="#fff" />
-              <Text style={styles.quickText}>Dial</Text>
-            </PressableScale>
-            <PressableScale style={styles.quickBtn} testID="calls-join-btn">
-              <Ionicons name="enter-outline" size={18} color="#fff" />
-              <Text style={styles.quickText}>Join link</Text>
-            </PressableScale>
-            <PressableScale style={styles.quickBtn} testID="calls-schedule-btn">
-              <Ionicons name="calendar-outline" size={18} color="#fff" />
-              <Text style={styles.quickText}>Schedule</Text>
-            </PressableScale>
-          </View>
-        </Animated.View>
-
         {/* Favorite contacts */}
-        <Animated.View entering={FadeInDown.delay(250).duration(500)}>
+        <Animated.View entering={FadeInDown.delay(100).duration(500)}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Favorites</Text>
             <PressableScale testID="calls-favorites-all-btn" pressScale={0.97}>
@@ -123,7 +69,7 @@ export default function Calls() {
             {CONTACTS.map((c, i) => {
               const lang = getLang(c.lang);
               return (
-                <Animated.View key={c.id} entering={FadeInRight.delay(300 + i * 60).duration(400)}>
+                <Animated.View key={c.id} entering={FadeInRight.delay(150 + i * 60).duration(400)}>
                   <PressableScale
                     style={styles.contactItem}
                     onPress={() => router.push(`/live?mode=call&contact=${c.id}` as any)}
@@ -147,7 +93,7 @@ export default function Calls() {
         </Animated.View>
 
         {/* Recent activity */}
-        <Animated.View entering={FadeInDown.delay(320).duration(500)}>
+        <Animated.View entering={FadeInDown.delay(200).duration(500)}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Recent</Text>
             <PressableScale
@@ -165,7 +111,7 @@ export default function Calls() {
             const to = getLang(a.to);
             const contact = getContact(a.contactId);
             return (
-              <Animated.View key={a.id} entering={FadeInDown.delay(400 + i * 70).duration(400)}>
+              <Animated.View key={a.id} entering={FadeInDown.delay(250 + i * 70).duration(400)}>
                 <PressableScale
                   style={styles.activityRow}
                   onPress={() => router.push(a.type === 'call' ? `/live?mode=call&contact=${a.contactId || ''}` as any : `/transcript/${a.id}` as any)}
@@ -221,7 +167,7 @@ export default function Calls() {
           })}
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(650).duration(500)}>
+        <Animated.View entering={FadeInDown.delay(400).duration(500)}>
           <PressableScale
             style={styles.upgradeBanner}
             onPress={() => router.push('/pricing')}
@@ -239,40 +185,28 @@ export default function Calls() {
           </PressableScale>
         </Animated.View>
       </ScrollView>
+
+      {/* FLOATING DIALER */}
+      <TouchableOpacity 
+        style={styles.fab} 
+        activeOpacity={0.8}
+        onPress={() => router.push('/call/new')}
+      >
+        <Ionicons name="keypad" size={28} color="#fff" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: theme.colors.bg },
-  content: { paddingBottom: 32 },
+  content: { paddingBottom: 100 }, 
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 8, paddingBottom: 20 },
   greet: { fontSize: 14, color: theme.colors.textSecondary, fontWeight: '500' },
   name: { fontSize: 26, fontWeight: '800', color: theme.colors.ink, letterSpacing: -0.8, marginTop: 2 },
   profileBtn: { width: 44, height: 44, borderRadius: 22, position: 'relative' },
   profileImg: { width: '100%', height: '100%', borderRadius: 22 },
   presenceDot: { position: 'absolute', bottom: 0, right: 0, width: 12, height: 12, borderRadius: 6, borderWidth: 2, borderColor: theme.colors.bg },
-
-  heroCard: { marginHorizontal: 20, backgroundColor: theme.colors.ink, borderRadius: 24, padding: 22, marginBottom: 28 },
-  heroRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  liveBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(16,185,129,0.15)', paddingVertical: 5, paddingHorizontal: 10, borderRadius: 999 },
-  livePulse: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981' },
-  liveBadgeText: { color: '#10B981', fontSize: 10, fontWeight: '800', letterSpacing: 0.8 },
-  langIndicator: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.08)', paddingVertical: 5, paddingHorizontal: 10, borderRadius: 999 },
-  langIndicatorFlag: { fontSize: 13 },
-  heroTitle: { color: '#fff', fontSize: 32, fontWeight: '800', letterSpacing: -1.2, lineHeight: 38, marginBottom: 6 },
-  heroSub: { color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 18 },
-
-  modeGrid: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-  modeBtn: { padding: 14, borderRadius: 14, minHeight: 128, justifyContent: 'space-between' },
-  modeName: { color: '#fff', fontSize: 13, fontWeight: '800', marginTop: 8, letterSpacing: -0.2 },
-  modeDesc: { color: 'rgba(255,255,255,0.82)', fontSize: 10, fontWeight: '500', lineHeight: 14, marginTop: 2 },
-  modeTag: { alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.2)', paddingVertical: 3, paddingHorizontal: 7, borderRadius: 999, marginTop: 6 },
-  modeTagText: { color: '#fff', fontSize: 9, fontWeight: '800', letterSpacing: 0.5 },
-
-  quickRow: { flexDirection: 'row', gap: 8 },
-  quickBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.08)', paddingVertical: 11, borderRadius: 10 },
-  quickText: { color: '#fff', fontSize: 12, fontWeight: '700' },
 
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 12, marginTop: 4 },
   sectionTitle: { fontSize: 18, fontWeight: '800', color: theme.colors.ink, letterSpacing: -0.4 },
@@ -306,4 +240,22 @@ const styles = StyleSheet.create({
   upgradeIcon: { width: 40, height: 40, borderRadius: 10, backgroundColor: theme.colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   upgradeTitle: { color: theme.colors.ink, fontSize: 14, fontWeight: '800', marginBottom: 2 },
   upgradeSub: { color: theme.colors.textSecondary, fontSize: 11 },
+
+  /* Floating Dialer */
+  fab: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 24 : 16,
+    right: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#000', 
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
 });

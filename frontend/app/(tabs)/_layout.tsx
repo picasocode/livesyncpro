@@ -55,20 +55,11 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="plugins"
+        name="meetings"
         options={{
-          title: 'Discover',
+          title: 'Meetings',
           tabBarIcon: ({ color, focused }) => (
-            <View testID="tab-discover-icon"><TabIcon name={focused ? 'sparkles' : 'sparkles-outline'} focused={focused} color={color} /></View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Settings',
-          tabBarIcon: ({ color, focused }) => (
-            <View testID="tab-settings-icon"><TabIcon name={focused ? 'settings' : 'settings-outline'} focused={focused} color={color} /></View>
+            <View testID="tab-meetings-icon"><TabIcon name={focused ? 'calendar' : 'calendar-outline'} focused={focused} color={color} /></View>
           ),
         }}
       />
